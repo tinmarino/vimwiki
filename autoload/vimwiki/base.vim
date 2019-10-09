@@ -1368,7 +1368,7 @@ function! vimwiki#base#follow_link(split, ...) abort
       endif
     endif
 
-  else
+  else    " lnk == "" <= cursor is not on a link
     if a:0 >= 3
       execute 'normal! '.a:3
     elseif vimwiki#vars#get_global('create_link')

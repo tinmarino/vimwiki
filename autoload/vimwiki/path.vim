@@ -4,6 +4,7 @@
 " Home: https://github.com/vimwiki/vimwiki/
 
 
+" Remove last path delimitator (slash or backslash)
 function! vimwiki#path#chomp_slash(str) abort
   return substitute(a:str, '[/\\]\+$', '', '')
 endfunction
@@ -21,7 +22,7 @@ else
 endif
 
 
-" collapse sections like /a/b/../c to /a/c
+" Collapse sections like /a/b/../c to /a/c
 function! vimwiki#path#normalize(path) abort
   let path = a:path
   while 1
@@ -35,34 +36,34 @@ function! vimwiki#path#normalize(path) abort
 endfunction
 
 
+" Normalize path: \ -> / &&  /// -> / && resolve(symlinks)
 function! vimwiki#path#path_norm(path) abort
-  " /-slashes
-  if a:path !~# '^scp:'
-    let path = substitute(a:path, '\', '/', 'g')
-    " treat multiple consecutive slashes as one path separator
-    let path = substitute(path, '/\+', '/', 'g')
-    " ensure that we are not fooled by a symbolic link
-    return resolve(path)
-  else
-    return a:path
-  endif
+  " return if scp
+  if a:path =~# '^scp:' | return a:path | endif
+  " convert backslash to slash
+  let path = substitute(a:path, '\', '/', 'g')
+  " treat multiple consecutive slashes as one path separator
+  let path = substitute(path, '/\+', '/', 'g')
+  " ensure that we are not fooled by a symbolic link
+  return resolve(path)
 endfunction
 
 
+" Check if link is to a directory
 function! vimwiki#path#is_link_to_dir(link) abort
-  " Check if link is to a directory.
   " It should be ended with \ or /.
   return a:link =~# '\m[/\\]$'
 endfunction
 
 
+" Get absolute path <- path relative to current file
 function! vimwiki#path#abs_path_of_link(link) abort
   return vimwiki#path#normalize(expand('%:p:h').'/'.a:link)
 endfunction
 
 
-" return longest common path prefix of 2 given paths.
-" '~/home/usrname/wiki', '~/home/usrname/wiki/shmiki' => '~/home/usrname/wiki'
+" Returns: longest common path prefix of 2 given paths.
+" Ex: '~/home/usrname/wiki', '~/home/usrname/wiki/shmiki' => '~/home/usrname/wiki'
 function! vimwiki#path#path_common_pfx(path1, path2) abort
   let p1 = split(a:path1, '[/\\]', 1)
   let p2 = split(a:path2, '[/\\]', 1)
@@ -80,6 +81,7 @@ function! vimwiki#path#path_common_pfx(path1, path2) abort
 endfunction
 
 
+" Convert path -> full resolved slashed path
 function! vimwiki#path#wikify_path(path) abort
   let result = resolve(fnamemodify(a:path, ':p'))
   if vimwiki#u#is_windows()
@@ -90,6 +92,7 @@ function! vimwiki#path#wikify_path(path) abort
 endfunction
 
 
+" Get current file path wikified
 function! vimwiki#path#current_wiki_file() abort
   return vimwiki#path#wikify_path(expand('%:p'))
 endfunction
