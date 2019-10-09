@@ -526,10 +526,6 @@ function! vimwiki#base#get_wikilinks(wiki_nr, also_absolute_links) abort
   let result = []
   for wikifile in files
     let wikifile = fnamemodify(wikifile, ':r') " strip extension
-    if vimwiki#u#is_windows()
-      " TODO temporary fix see #478
-      let wikifile = substitute(wikifile , '/', '\', 'g')
-    endif
     let wikifile = vimwiki#path#relpath(cwd, wikifile)
     call add(result, wikifile)
   endfor
@@ -541,10 +537,6 @@ function! vimwiki#base#get_wikilinks(wiki_nr, also_absolute_links) abort
         let cwd = vimwiki#vars#get_wikilocal('path') . vimwiki#vars#get_wikilocal('diary_rel_path')
       endif
       let wikifile = fnamemodify(wikifile, ':r') " strip extension
-      if vimwiki#u#is_windows()
-        " TODO temporary fix see #478
-        let wikifile = substitute(wikifile , '/', '\', 'g')
-      endif
       let wikifile = '/'.vimwiki#path#relpath(cwd, wikifile)
       call add(result, wikifile)
     endfor
