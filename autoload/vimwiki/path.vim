@@ -4,6 +4,31 @@
 " Home: https://github.com/vimwiki/vimwiki/
 
 
+
+" Unixify path
+function! s:unixify(path)
+    return substitute(a:path, '\', '/', 'g')
+endfunction
+
+
+" Windowsify path
+function! s:windowsify(path)
+    return substitute(a:path, '/', '\', 'g')
+endfunction
+
+
+" Define os specific path convertion
+if vimwiki#u#is_windows()
+  function! s:osxify(path)
+    return s:windowsify(path)
+  endfunction
+else
+  function! s:osxify(path)
+    return s:unixify(path)
+  endfunction
+endif
+
+
 " Remove last path delimitator (slash or backslash)
 function! vimwiki#path#chomp_slash(str) abort
   return substitute(a:str, '[/\\]\+$', '', '')
